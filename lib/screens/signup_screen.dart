@@ -1,0 +1,160 @@
+import 'package:flutter/material.dart';
+import 'package:twitch_clone_tutorial/resources/auth_methods.dart';
+import 'package:twitch_clone_tutorial/responsive/responsive.dart';
+import 'package:twitch_clone_tutorial/screens/home_screen.dart';
+import 'package:twitch_clone_tutorial/utils/colors.dart';
+import 'package:twitch_clone_tutorial/widgets/custom_button.dart';
+import 'package:twitch_clone_tutorial/widgets/custom_textfield.dart';
+import 'package:twitch_clone_tutorial/widgets/loading_indicator.dart';
+
+class SignupScreen extends StatefulWidget {
+  static const String routeName = '/signup';
+  const SignupScreen({Key? key}) : super(key: key);
+
+  @override
+  State<SignupScreen> createState() => _SignupScreenState();
+}
+
+class _SignupScreenState extends State<SignupScreen> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final AuthMethods _authMethods = AuthMethods();
+  bool _isLoading = false;
+
+  void signUpUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+    bool res = await _authMethods.signUpUser(
+      context,
+      _emailController.text,
+      _usernameController.text,
+      _passwordController.text,
+    );
+    setState(() {
+      _isLoading = false;
+    });
+    if (res) {
+      Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+    }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _usernameController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: buttonColor,
+        title: const Text(
+          'Sign Up',
+          style: TextStyle(
+              fontWeight: FontWeight.bold, color: Colors.white, fontSize: 22),
+        ),
+      ),
+      body: _isLoading
+          ? const LoadingIndicator()
+          : Responsive(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: size.height * 0.1),
+                      Container(
+                        width: 120,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(40),
+                          color: buttonColor.withOpacity(0.6),
+                        ),
+                        child: Center(
+                          child: const Text(
+                            'Email',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontSize: 18),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: CustomTextField(
+                          controller: _emailController,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Container(
+                        width: 120,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(40),
+                          color: buttonColor.withOpacity(0.6),
+                        ),
+                        child: Center(
+                          child: const Text(
+                            'Username',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontSize: 18),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: CustomTextField(
+                          controller: _usernameController,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Container(
+                        width: 120,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(40),
+                          color: buttonColor.withOpacity(0.6),
+                        ),
+                        child: Center(
+                          child: const Text(
+                            'Password',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontSize: 18),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: CustomTextField(
+                          controller: _passwordController,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      CustomButton(onTap: signUpUser, text: 'Sign Up'),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+    );
+  }
+}
